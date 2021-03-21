@@ -1,5 +1,6 @@
 import requests, sys, datetime
 
+import config, nicehash_api
 from db import db_session
 from models import herro
 
@@ -19,8 +20,7 @@ log = logger.get_logger(__name__)
 # 8. Hash Rate - текущий хэшь-рейт
 # https://conflux.herominers.com/api/stats_address?address=:wallet&recentBlocksAmount=20&longpoll=true
 
-def get_stat(wallet:str):
-    url = "https://conflux.herominers.com/api/stats_address?address=:wallet&recentBlocksAmount=20&longpoll=true"
+def get_api(url:str, wallet:str):
     url = url.replace(":wallet",wallet)
 
     response = requests.get(url, params={"format":"json"})
@@ -63,11 +63,11 @@ def reward2float(reward:str):
     return float(reward)
 
 def run_wallet(wallet):
-    s_json = get_stat(wallet)
-    if s_json is None:
+    stats_address = get_api("https://conflux.herominers.com/api/stats_address?address=:wallet&recentBlocksAmount=20&longpoll=true", wallet)
+    if stats_address is None:
         return
-    hash_rate = s_json["stats"]["hashrate"]
-    unlockeds = s_json["unlocked"]
+    hash_rate = stats_address["stats"]["hashrate"]
+    unlockeds = stats_address["unlocked"]
 
     for unlocked in unlockeds:
         text = unlocked.split(":")
@@ -83,19 +83,17 @@ def run_wallet(wallet):
             rec_exists = add_db(block_hash, height, wallet, difficulty, time_found, region, block_reward, reward, hash_rate)
             if rec_exists == 0:
                 log.info(f"{wallet} {time_found} {height} {difficulty} {region} {block_reward} {reward}")
-            # else:
-            #      print("===", rec_exists, wallet, time_found, height, difficulty, region, block_reward, reward)
+    live_stats = get_api("https://conflux.herominers.com/api/live_stats?address=:wallet", wallet)
+    return int(live_stats["network"]["difficulty"])
             
 
 if __name__ == "__main__":
     while True:
-        run_wallet("cfx:aaj1mzzem5cvefbxfb724x1rss70r9dd4ydwkt3zya") 
-        # run_wallet("cfx:aaphu29ca7d77t09u84nwhhdrc3wa6uv1u8u96nsk3")
-        # run_wallet("0x14946738c0fdce02e089448d6aa2e5ae1e931fc4")
-        # run_wallet("cfx:aapf4ckvkjyxxbfyxsrbjpf1j1z1v1m52eghv468zx")
-        # run_wallet("0x1a2a96b3166c51B216321CBEf0E266Ff67986162")
-        # run_wallet("cfx:aapt5t080rafg7cky09tn73wc5wnnszv8a566uwunk")
-        # run_wallet("0x11efed3847b7a2c081432a28fbfbe7d28e7b3b24")
-        # run_wallet("cfx:aak1cvc55r8w9p7c5x3ywdrmf4advdw6uuky0u75z6")
-        # run_wallet("0x1AcdD76Fe6B3bF5629726F9D5416Fe68032eC91b")
-        # run_wallet("0x1282201025212947e1bff605b0d0d7846c49dbe9")
+        for wallet in config.wallets:
+            difficulty = run_wallet(wallet) 
+            if difficulty < config.limit_difficulty:
+                nicehash_api.start_order
+            else:
+                nicehash_api.stop_order
+            log.info(f"difficulty = {difficulty}")
+
