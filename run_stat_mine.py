@@ -1,8 +1,10 @@
-import requests, sys, datetime
+import requests
 
-import config, nicehash_api
+import config, order
 from db import db_session
 from models import herro
+from func import reward2float
+
 
 import logger
 log = logger.get_logger(__name__)
@@ -20,6 +22,13 @@ log = logger.get_logger(__name__)
 # 8. Hash Rate - текущий хэшь-рейт
 # https://conflux.herominers.com/api/stats_address?address=:wallet&recentBlocksAmount=20&longpoll=true
 
+#Нужна таблица
+# 1. time - Время
+# 1. difficulty - Текущая сложнось
+# 2. max_price - Максимальная цена профитности. 
+# 3. speed_XXX - Доступная скорость по каждомц рынку "EU", "USA", "EU_N", "USA_E"
+# 3. fix_0_001 - Цена фиксированого ордера при мощьности 0.001,0.008,0.009,0.01,0.05,0.1,0.5,1.0 
+
 def get_api(url:str, wallet:str):
     url = url.replace(":wallet",wallet)
 
@@ -35,10 +44,6 @@ def get_api(url:str, wallet:str):
     except:
         log.info(f"Error convert json. response.text = {response.text}")
         return None
-
-def int2time(time:int):
-    time_since = datetime.datetime(1970, 1, 1, 1) + datetime.timedelta(seconds=time)
-    return time_since
 
 def add_db(block_hash:str, height:int, wallet:str, difficulty:int, time_found:int, region:str, block_reward:float, reward:float, hash_rate:int):
     rec_exists = herro.query.filter(herro.block_hash == block_hash and herro.wallet == wallet).count()
@@ -56,11 +61,6 @@ def add_db(block_hash:str, height:int, wallet:str, difficulty:int, time_found:in
         db_session.commit()
     return rec_exists
 
-def reward2float(reward:str):
-    while len(reward)<19:
-        reward = "0" + reward
-    reward = reward[:1] + "." + reward[1:9]
-    return float(reward)
 
 def run_wallet(wallet):
     stats_address = get_api("https://conflux.herominers.com/api/stats_address?address=:wallet&recentBlocksAmount=20&longpoll=true", wallet)
@@ -92,8 +92,8 @@ if __name__ == "__main__":
         for wallet in config.wallets:
             difficulty = run_wallet(wallet) 
             if difficulty < config.limit_difficulty:
-                nicehash_api.start_order
+                order.start()
             else:
-                nicehash_api.stop_order
+                order.stop()
             log.info(f"difficulty = {difficulty}")
 
