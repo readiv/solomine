@@ -22,8 +22,6 @@ class diff(Base):
     id = Column(Integer, primary_key=True)
     date = Column(DateTime, default=datetime.datetime.utcnow)
     difficulty = Column(BigInteger)
-    hash_last = Column(BigInteger)
-    hash_avg = Column(BigInteger)
     max_price = Column(Float)
 
     EU_005 = Column(Float)
