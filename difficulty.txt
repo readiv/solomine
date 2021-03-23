@@ -1,3 +1,10 @@
+172800 blocks per day
+
 1099.264333783   2.052388
 1648.896500674   1.36378 
 1106.095618178   2.02572
+
+https://api.minerstat.com/
+https://www.f2pool.com/coin/conflux
+https://conflux.herominers.com/?lang=ru#
+https://confluxscan.io/

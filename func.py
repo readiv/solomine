@@ -7,6 +7,9 @@ def int2time(time:int):
 def time2int(time: datetime):
     return int((time - datetime.datetime(1970, 1, 1, 1)).total_seconds())
 
+def time2float(time: datetime):
+    return float((time - datetime.datetime(1970, 1, 1, 1)).total_seconds())
+
 def reward2float(reward:str):
     while len(reward)<19:
         reward = "0" + reward

@@ -35,6 +35,32 @@ class diff(Base):
     def __repr__(self):
         return f'<time {self.time}>'
 
+class diff_new(Base):
+    __tablename__ = 'diff_new'
+    time = Column(Float, primary_key=True)
+    difficulty = Column(BigInteger)
+    hash = Column(BigInteger)
+    max_price = Column(Float)
+    fix_EU_005 = Column(Float)
+    fix_EU_010 = Column(Float)
+    fix_EU_050 = Column(Float)
+    fix_EU_100 = Column(Float)
+    fix_EU_N_005 = Column(Float)
+    fix_EU_N_010 = Column(Float)
+    fix_EU_N_050 = Column(Float)
+    fix_EU_N_100 = Column(Float)
+    fix_USA_005 = Column(Float)
+    fix_USA_010 = Column(Float)
+    fix_USA_050 = Column(Float)
+    fix_USA_100 = Column(Float)
+    fix_USA_E_005 = Column(Float)
+    fix_USA_E_010 = Column(Float)
+    fix_USA_E_050 = Column(Float)
+    fix_USA_E_100 = Column(Float)
+
+    def __repr__(self):
+        return f'<time {self.time}>'
+
 #Нужна таблица
 # 1. time - Время
 # 1. difficulty - Текущая сложнось
