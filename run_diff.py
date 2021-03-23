@@ -49,33 +49,34 @@ def parser():
     USA =  private_api.get_hashpower_fixedprice("USA", "OCTOPUS", 0.005)
     USA_E =  private_api.get_hashpower_fixedprice("USA_E", "OCTOPUS", 0.005)
 
-    diff_uno = diff(time = time,
-                    difficulty = difficulty,
-                    hash_last = hash_last,
-                    hash_avg = hash_avg3,
-                    max_price = max_price,
-                    EU_005 = EU["fixedPrice"],
-                    EU_010 = private_api.get_hashpower_fixedprice("EU", "OCTOPUS", 0.010)["fixedPrice"],
-                    EU_050 = private_api.get_hashpower_fixedprice("EU", "OCTOPUS", 0.050)["fixedPrice"],
-                    EU_100 = private_api.get_hashpower_fixedprice("EU", "OCTOPUS", 0.100)["fixedPrice"],
-                    EU_N_005 = EU_N["fixedPrice"],
-                    EU_N_010 = private_api.get_hashpower_fixedprice("EU_N", "OCTOPUS", 0.010)["fixedPrice"],
-                    EU_N_050 = private_api.get_hashpower_fixedprice("EU_N", "OCTOPUS", 0.050)["fixedPrice"],
-                    EU_N_100 = private_api.get_hashpower_fixedprice("EU_N", "OCTOPUS", 0.100)["fixedPrice"],
-                    USA_005 = USA["fixedPrice"],
-                    USA_010 = private_api.get_hashpower_fixedprice("USA", "OCTOPUS", 0.010)["fixedPrice"],
-                    USA_050 = private_api.get_hashpower_fixedprice("USA", "OCTOPUS", 0.050)["fixedPrice"],
-                    USA_100 = private_api.get_hashpower_fixedprice("USA", "OCTOPUS", 0.100)["fixedPrice"],
-                    USA_E_005 = USA_E["fixedPrice"],
-                    USA_E_010 =  private_api.get_hashpower_fixedprice("USA_E", "OCTOPUS", 0.010)["fixedPrice"],
-                    USA_E_050 =  private_api.get_hashpower_fixedprice("USA_E", "OCTOPUS", 0.050)["fixedPrice"],
-                    USA_E_100 =  private_api.get_hashpower_fixedprice("USA_E", "OCTOPUS", 0.100)["fixedPrice"],
-                    EU_N_p = EU_N["fixedMax"],
-                    USA_p = USA["fixedMax"],
-                    USA_E_p = USA_E["fixedMax"],
-                    EU_p = EU["fixedMax"])
-    db_session.add(diff_uno)
-    db_session.commit()
+    if hash_avg_arr[0] != 0:
+        diff_uno = diff(time = time,
+                        difficulty = difficulty,
+                        hash_last = hash_last,
+                        hash_avg = hash_avg3,
+                        max_price = max_price,
+                        EU_005 = EU["fixedPrice"],
+                        EU_010 = private_api.get_hashpower_fixedprice("EU", "OCTOPUS", 0.010)["fixedPrice"],
+                        EU_050 = private_api.get_hashpower_fixedprice("EU", "OCTOPUS", 0.050)["fixedPrice"],
+                        EU_100 = private_api.get_hashpower_fixedprice("EU", "OCTOPUS", 0.100)["fixedPrice"],
+                        EU_N_005 = EU_N["fixedPrice"],
+                        EU_N_010 = private_api.get_hashpower_fixedprice("EU_N", "OCTOPUS", 0.010)["fixedPrice"],
+                        EU_N_050 = private_api.get_hashpower_fixedprice("EU_N", "OCTOPUS", 0.050)["fixedPrice"],
+                        EU_N_100 = private_api.get_hashpower_fixedprice("EU_N", "OCTOPUS", 0.100)["fixedPrice"],
+                        USA_005 = USA["fixedPrice"],
+                        USA_010 = private_api.get_hashpower_fixedprice("USA", "OCTOPUS", 0.010)["fixedPrice"],
+                        USA_050 = private_api.get_hashpower_fixedprice("USA", "OCTOPUS", 0.050)["fixedPrice"],
+                        USA_100 = private_api.get_hashpower_fixedprice("USA", "OCTOPUS", 0.100)["fixedPrice"],
+                        USA_E_005 = USA_E["fixedPrice"],
+                        USA_E_010 =  private_api.get_hashpower_fixedprice("USA_E", "OCTOPUS", 0.010)["fixedPrice"],
+                        USA_E_050 =  private_api.get_hashpower_fixedprice("USA_E", "OCTOPUS", 0.050)["fixedPrice"],
+                        USA_E_100 =  private_api.get_hashpower_fixedprice("USA_E", "OCTOPUS", 0.100)["fixedPrice"],
+                        EU_N_p = EU_N["fixedMax"],
+                        USA_p = USA["fixedMax"],
+                        USA_E_p = USA_E["fixedMax"],
+                        EU_p = EU["fixedMax"])
+        db_session.add(diff_uno)
+        db_session.commit()
     
     hash_avg_arr = hash_avg_arr[1:]+hash_avg_arr[:1]
 
