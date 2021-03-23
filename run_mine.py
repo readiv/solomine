@@ -1,4 +1,4 @@
-import requests
+import requests, confluxscan
 
 import config, order
 from db import db_session
@@ -83,8 +83,9 @@ def run_wallet(wallet):
             rec_exists = add_db(block_hash, height, wallet, difficulty, time_found, region, block_reward, reward, hash_rate)
             if rec_exists == 0:
                 log.info(f"{wallet} {time_found} {height} {difficulty} {region} {block_reward} {reward}")
-    live_stats = get_api("https://conflux.herominers.com/api/live_stats?address=:wallet", wallet)
-    return int(live_stats["network"]["difficulty"])
+    difficulty, _, _ = confluxscan.get_difficulty_hash(10)
+    # live_stats = get_api("https://conflux.herominers.com/api/live_stats?address=:wallet", wallet)
+    return difficulty
             
 
 if __name__ == "__main__":

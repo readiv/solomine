@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, BigInteger, Float
+import datetime
+from sqlalchemy import Column, Integer, String, BigInteger, Float, DateTime
 from db import Base, engine
 
 class herro(Base):
@@ -19,7 +20,7 @@ class herro(Base):
 class diff(Base):
     __tablename__ = 'diff'
     id = Column(Integer, primary_key=True)
-    time = Column(Integer)
+    date = Column(DateTime, default=datetime.datetime.utcnow)
     difficulty = Column(BigInteger)
     hash_last = Column(BigInteger)
     hash_avg = Column(BigInteger)

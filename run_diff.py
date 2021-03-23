@@ -50,8 +50,7 @@ def parser():
     USA_E =  private_api.get_hashpower_fixedprice("USA_E", "OCTOPUS", 0.005)
 
     if hash_avg_arr[0] != 0:
-        diff_uno = diff(time = time,
-                        difficulty = difficulty,
+        diff_uno = diff(difficulty = difficulty,
                         hash_last = hash_last,
                         hash_avg = hash_avg3,
                         max_price = max_price,
