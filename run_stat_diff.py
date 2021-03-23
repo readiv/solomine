@@ -2,8 +2,8 @@ import requests, datetime, nicehash
 
 import config, order
 from db import db_session
-from models import diff
-from func import time2int
+from models import diff_new
+from func import time2float
 
 import logger
 log = logger.get_logger(__name__)
@@ -28,41 +28,37 @@ def get_api(url:str, wallet:str):
         return None
 
 def run_wallet(wallet):
-    time = time2int(datetime.datetime.now())
+    # time = time2int(datetime.datetime.now())
+    time = time2float(datetime.datetime.now())
+    print(time)
     live_stats = get_api("https://conflux.herominers.com/api/live_stats?address=:wallet", wallet)
     difficulty = int(live_stats["network"]["difficulty"])
+    hash = 2 * difficulty
     max_price = 3.429604 - 0.00127 * difficulty / 1000000000
-    resp = private_api.get_hashpower_fixedprice("EU", "OCTOPUS", 0.001)
-    speed = resp["fixedMax"]
-    fix_001 = resp["fixedPrice"]
-    fix_005 = private_api.get_hashpower_fixedprice("EU", "OCTOPUS", 0.005)["fixedPrice"]
-    fix_008 = private_api.get_hashpower_fixedprice("EU", "OCTOPUS", 0.008)["fixedPrice"]
-    fix_009 = private_api.get_hashpower_fixedprice("EU", "OCTOPUS", 0.009)["fixedPrice"]
-    fix_010 = private_api.get_hashpower_fixedprice("EU", "OCTOPUS", 0.010)["fixedPrice"]
-    fix_050 = private_api.get_hashpower_fixedprice("EU", "OCTOPUS", 0.050)["fixedPrice"]
-    fix_100 = private_api.get_hashpower_fixedprice("EU", "OCTOPUS", 0.100)["fixedPrice"]
-    fix_500 = private_api.get_hashpower_fixedprice("EU", "OCTOPUS", 0.500)["fixedPrice"]
-    fix_999 = private_api.get_hashpower_fixedprice("EU", "OCTOPUS", 1.000)["fixedPrice"]
-
-    diff_uno = diff(time = time,
+    diff_uno = diff_new(time = time,
                     difficulty = difficulty,
+                    hash = hash,
                     max_price = max_price,
-                    speed = speed,
-                    fix_001 = fix_001,
-                    fix_005 = fix_005,
-                    fix_008 = fix_008,
-                    fix_009 = fix_009,
-                    fix_010 = fix_010,
-                    fix_050 = fix_050,
-                    fix_100 = fix_100,
-                    fix_500 = fix_500,
-                    fix_999 = fix_999)
+                    fix_EU_005 = private_api.get_hashpower_fixedprice("EU", "OCTOPUS", 0.005)["fixedPrice"],
+                    fix_EU_010 = private_api.get_hashpower_fixedprice("EU", "OCTOPUS", 0.010)["fixedPrice"],
+                    fix_EU_050 = private_api.get_hashpower_fixedprice("EU", "OCTOPUS", 0.050)["fixedPrice"],
+                    fix_EU_100 = private_api.get_hashpower_fixedprice("EU", "OCTOPUS", 0.100)["fixedPrice"],
+                    fix_EU_N_005 = private_api.get_hashpower_fixedprice("EU_N", "OCTOPUS", 0.005)["fixedPrice"],
+                    fix_EU_N_010 = private_api.get_hashpower_fixedprice("EU_N", "OCTOPUS", 0.010)["fixedPrice"],
+                    fix_EU_N_050 = private_api.get_hashpower_fixedprice("EU_N", "OCTOPUS", 0.050)["fixedPrice"],
+                    fix_EU_N_100 = private_api.get_hashpower_fixedprice("EU_N", "OCTOPUS", 0.100)["fixedPrice"],
+                    fix_USA_005 = private_api.get_hashpower_fixedprice("USA", "OCTOPUS", 0.005)["fixedPrice"],
+                    fix_USA_010 = private_api.get_hashpower_fixedprice("USA", "OCTOPUS", 0.010)["fixedPrice"],
+                    fix_USA_050 = private_api.get_hashpower_fixedprice("USA", "OCTOPUS", 0.050)["fixedPrice"],
+                    fix_USA_100 = private_api.get_hashpower_fixedprice("USA", "OCTOPUS", 0.100)["fixedPrice"],
+                    fix_USA_E_005 = private_api.get_hashpower_fixedprice("USA_E", "OCTOPUS", 0.005)["fixedPrice"],
+                    fix_USA_E_010 =  private_api.get_hashpower_fixedprice("USA_E", "OCTOPUS", 0.010)["fixedPrice"],
+                    fix_USA_E_050 =  private_api.get_hashpower_fixedprice("USA_E", "OCTOPUS", 0.050)["fixedPrice"],
+                    fix_USA_E_100 =  private_api.get_hashpower_fixedprice("USA_E", "OCTOPUS", 0.100)["fixedPrice"])
     db_session.add(diff_uno)
     db_session.commit()
-
-            
+           
 if __name__ == "__main__":
     while True:
         for wallet in config.wallets:
-            difficulty = run_wallet(wallet) 
-
+            run_wallet(wallet)
