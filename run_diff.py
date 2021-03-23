@@ -1,6 +1,6 @@
-import requests, datetime, nicehash, confluxscan
+import requests, nicehash, confluxscan
 
-import config, order
+import config
 from db import db_session
 from models import diff
 from func import time2int
@@ -28,12 +28,6 @@ def get_api(url:str, wallet:str):
         return None
 
 def parser():
-    # time = time2int(datetime.datetime.now())
-    # time = time2float(datetime.datetime.now())
-    # print(time)
-    # live_stats = get_api("https://conflux.herominers.com/api/live_stats?address=:wallet", wallet)
-    # difficulty = int(live_stats["network"]["difficulty"])
-    # hash = 2 * difficulty
 
     difficulty = confluxscan.get_difficulty()
     max_price = 1000000000000 * 172800 * 0.00001810 / difficulty
