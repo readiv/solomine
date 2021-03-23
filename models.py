@@ -18,45 +18,37 @@ class herro(Base):
 
 class diff(Base):
     __tablename__ = 'diff'
-    time = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True)
+    time = Column(Integer)
     difficulty = Column(BigInteger)
+    hash_last = Column(BigInteger)
+    hash_avg = Column(BigInteger)
     max_price = Column(Float)
-    speed = Column(Float)
-    fix_001 = Column(Float)
-    fix_005 = Column(Float)
-    fix_008 = Column(Float)
-    fix_009 = Column(Float)
-    fix_010 = Column(Float)
-    fix_050 = Column(Float)
-    fix_100 = Column(Float)
-    fix_500 = Column(Float)
-    fix_999 = Column(Float)
 
-    def __repr__(self):
-        return f'<time {self.time}>'
+    EU_005 = Column(Float)
+    EU_N_005 = Column(Float)
+    USA_005 = Column(Float)
+    USA_E_005 = Column(Float)
 
-class diff_new(Base):
-    __tablename__ = 'diff_new'
-    time = Column(Float, primary_key=True)
-    difficulty = Column(BigInteger)
-    hash = Column(BigInteger)
-    max_price = Column(Float)
-    fix_EU_005 = Column(Float)
-    fix_EU_010 = Column(Float)
-    fix_EU_050 = Column(Float)
-    fix_EU_100 = Column(Float)
-    fix_EU_N_005 = Column(Float)
-    fix_EU_N_010 = Column(Float)
-    fix_EU_N_050 = Column(Float)
-    fix_EU_N_100 = Column(Float)
-    fix_USA_005 = Column(Float)
-    fix_USA_010 = Column(Float)
-    fix_USA_050 = Column(Float)
-    fix_USA_100 = Column(Float)
-    fix_USA_E_005 = Column(Float)
-    fix_USA_E_010 = Column(Float)
-    fix_USA_E_050 = Column(Float)
-    fix_USA_E_100 = Column(Float)
+    EU_010 = Column(Float)
+    EU_N_010 = Column(Float)
+    USA_010 = Column(Float)
+    USA_E_010 = Column(Float)
+
+    EU_050 = Column(Float)
+    EU_N_050 = Column(Float)
+    USA_050 = Column(Float)
+    USA_E_050 = Column(Float)
+
+    EU_100 = Column(Float)
+    EU_N_100 = Column(Float)
+    USA_100 = Column(Float)
+    USA_E_100 = Column(Float)
+
+    EU_p = Column(Float)
+    EU_N_p = Column(Float)
+    USA_p = Column(Float)
+    USA_E_p = Column(Float)
 
     def __repr__(self):
         return f'<time {self.time}>'

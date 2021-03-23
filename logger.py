@@ -1,4 +1,4 @@
-import logging
+import logging, time
 
 _log_format = f"%(asctime)s - [%(levelname)s] - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
 
@@ -20,3 +20,10 @@ def get_logger(name):
     logger.addHandler(get_file_handler())
     logger.addHandler(get_stream_handler())
     return logger
+ 
+class Profiler(object):
+    def __enter__(self):
+        self._startTime = time.time()
+              
+    def __exit__(self, type, value, traceback):
+        print("Elapsed time: {:.3f} sec".format(time.time() - self._startTime))

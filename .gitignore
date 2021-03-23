@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
+sqlitestudio-3.3.2
 
 # C extensions
 *.so
