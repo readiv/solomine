@@ -1,4 +1,4 @@
-import requests, random
+import requests
 
 import logger
 log = logger.get_logger(__name__)

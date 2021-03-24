@@ -24,6 +24,11 @@ class diff(Base):
     difficulty = Column(BigInteger)
     max_price = Column(Float)
 
+    EU_001 = Column(Float)
+    EU_N_001 = Column(Float)
+    USA_001 = Column(Float)
+    USA_E_001 = Column(Float)
+
     EU_005 = Column(Float)
     EU_N_005 = Column(Float)
     USA_005 = Column(Float)
