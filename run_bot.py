@@ -36,7 +36,7 @@ if __name__ == "__main__":
             continue
 
         deff = confluxscan.get_difficulty()
-        # log.info(f"deff_prev = {deff_prev} deff = {deff}")
+        print(f"deff_prev = {deff_prev} deff = {deff}")
         if deff > 1.1 * deff_prev: #Сложность повысилась. Стоп все ордера.
             log.info(f"deff > 1.1 * deff_prev deff_prev = {deff_prev} deff = {deff}")
             order.stop_all()
@@ -59,6 +59,7 @@ if __name__ == "__main__":
             #     while (fixedPrice != 0) and (power_test < fixedMax):
             #         power_test += 0.001 
         time.sleep(1)
+
 
 
 
