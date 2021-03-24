@@ -7,8 +7,6 @@ def get_difficulty():
     """ Получает значения сложности и последнего и среднего хэшрейта для 
         n_for_avg блоков сети. Либо None, если что то пошло не так
     """
-
-
     try:
          # Получаем сложность из последнего блока
         difficulty = 0
@@ -32,6 +30,7 @@ def get_difficulty():
     except Exception as e:
         log.error(str(e))
         return 0
+
 
 if __name__ == "__main__":
     with logger.Profiler() as p:

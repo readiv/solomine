@@ -3,7 +3,7 @@ import requests, nicehash, confluxscan
 import config
 from db import db_session
 from models import diff
-from func import time2int
+from func import get_api
 
 import logger
 log = logger.get_logger(__name__)
@@ -11,26 +11,11 @@ log = logger.get_logger(__name__)
 public_api = nicehash.public_api(config.host, False)
 private_api = nicehash.private_api(config.host, config.organisation_id, config.key, config.secret, False)
 
-def get_api(url:str, wallet:str):
-    url = url.replace(":wallet",wallet)
-
-    response = requests.get(url, params={"format":"json"})
-
-    if response.status_code != 200:
-        log.info(f"Error. response.status_code = {response.status_code}")
-        return None
-
-    try:
-        result = response.json()
-        return result
-    except:
-        log.info(f"Error convert json. response.text = {response.text}")
-        return None
-
 def parser():
 
     difficulty = confluxscan.get_difficulty()
-    max_price = 1000000000000 * 172800 * 0.00001810 / difficulty
+    price_BTC = float(get_api("https://conflux.herominers.com/api/get_market?tickers%5B%5D=CFX-BTC")[0]["price"])
+    max_price = 1000000000000 * 172800 * 0.00001961 / difficulty
     print(difficulty, max_price)
 
     EU=  private_api.get_hashpower_fixedprice("EU", "OCTOPUS", 0.005)
