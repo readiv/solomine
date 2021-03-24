@@ -15,7 +15,7 @@ def parser():
 
     difficulty = confluxscan.get_difficulty()
     price_BTC = float(get_api("https://conflux.herominers.com/api/get_market?tickers%5B%5D=CFX-BTC")[0]["price"])
-    max_price = 1000000000000 * 172800 * 0.00001961 / difficulty
+    max_price = 1000000000000 * 172800 * price_BTC / difficulty
     print(difficulty, max_price)
 
     EU=  private_api.get_hashpower_fixedprice("EU", "OCTOPUS", 0.005)
