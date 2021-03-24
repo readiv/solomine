@@ -187,10 +187,10 @@ class private_api:
         }
         return self.request('POST', '/main/api/v2/accounting/withdrawal/', '', withdraw_data)
 
-    def get_my_active_orders(self, algorithm, market, limit):
+    def get_my_active_orders(self, algorithm, status, market, limit):
 
         ts = self.get_epoch_ms_from_now()
-        params = "algorithm={}&market={}&ts={}&limit={}&op=LT".format(algorithm, market, ts, limit)
+        params = "algorithm={}&status={}&market={}&ts={}&limit={}&op=LT".format(algorithm, status, market, ts, limit)
 
         return self.request('GET', '/main/api/v2/hashpower/myOrders', params, None)
 
