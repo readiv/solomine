@@ -27,14 +27,19 @@ def start(market, type_order, algorithm, price, limit, amount):
         return None
 
 
-def stop_all(algorithm:str = ""):
+def stop_all(algorithm:str = "", max_price = 0):
     log.info("Stop all orders")
     try:
         active_orders = private_api.get_my_active_orders(algorithm,"ACTIVE","","100")["list"]
         for order in active_orders:
-            # print(private_api.cancel_hashpower_order(order["id"]))
-            log.info(f"order id = {order['id']} stoped")
-        return True
+            if float(order["price "]) > max_price:
+                private_api.cancel_hashpower_order(order["id"])
+                log.info(f"order id = {order['id']} stoped")
+        active_orders = private_api.get_my_active_orders(algorithm,"ACTIVE","","100")["list"]
+        if len(active_orders) > 0:
+            return True
+        else:
+            return None
     except Exception as e:
         log.error(str(e))
         return None
@@ -42,5 +47,5 @@ def stop_all(algorithm:str = ""):
 if __name__ == "__main__":
     # pass
     # print(start("EU","STANDARD", "SCRYPT", 1, 0.01, 0.001, "cfcfee1e-dd9a-4d4f-9859-5be0a9ccfa6c"))
-    # stop_all()
-    get_pool_id("EU_N","OCTOPUS")
+    stop_all("OCTOPUS")
+    # get_pool_id("EU_N","OCTOPUS")

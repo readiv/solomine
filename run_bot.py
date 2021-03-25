@@ -26,6 +26,7 @@ if __name__ == "__main__":
         if deff_prev != 0:
             break
     deadline_order = deadline_price = 0
+    deff_prev = 5951776704553
 
     while True:
         n = 0
@@ -34,6 +35,7 @@ if __name__ == "__main__":
             if n % 30 == 0:
                 log.info(f"Balance is close to zero. balance_available = {balance_available}")
             time.sleep(10)
+            balance_available = float(private_api.get_accounts_for_currency("BTC")["available"])
             n += 1
         if n != 0:
             log.info(f"balance_available = {balance_available} BTC")
@@ -43,12 +45,23 @@ if __name__ == "__main__":
             log.error(f"difficulty = 0")
             continue
 
-        if deff > 1.1 * deff_prev: #Сложность повысилась. Стоп все ордера.
+        if deff > 1.20 * deff_prev: #Сложность повысилась очень значительно. Стоп все ордера.
             log.info(f"The difficulty has increased. Stop all orders. deff = {deff} deff_prev = {deff_prev}")
-            order.stop_all()
+            order.stop_all("OCTOPUS")
             markets = ["EU","EU_N","USA","USA_E"]           #Восстанавливаем список рынков
             deadline_order = time.monotonic() + 75*60     #Ставим таймер на 75 минут
-            deadline_price = time.monotonic() + 5*60     #Ставим таймер на 5 минут 
+            deadline_price = time.monotonic() + 5     #Ставим таймер на 5 секунд 
+            deff_prev = deff
+
+        # if deff > 1.05 * deff_prev: #Сложность повысилась незначительно. Стоп на убыточные ордера 
+        #     log.info(f"The difficulty has increased. Stop all orders. deff = {deff} deff_prev = {deff_prev}")
+        #     price_BTC = float(get_api("https://conflux.herominers.com/api/get_market?tickers%5B%5D=CFX-BTC")[0]["price"])
+        #     max_price = 0.9 * 1000000000000 * 172800 * price_BTC / deff 
+        #     #Останавливаем ордера цена которых превышает рассчетную доходность - 10 процентов#
+        #     if order.stop_all("OCTOPUS", max_price) is None:
+        #         markets = ["EU","EU_N","USA","USA_E"]           #Восстанавливаем список рынков
+        #         deadline_order = time.monotonic() + 75*60     #Ставим таймер на 75 минут
+        #         deadline_price = time.monotonic() + 5*60     #Ставим таймер на 5 минут 
 
         if deadline_price != 0 and (time.monotonic()>deadline_price) and len(markets) > 0: #Запоминаем цены.
             price_001 = {} #Запоминаем значения цен на рынке при 0.001. Среднее арифметическое 4-х цен с интервалом 3 минуты 
@@ -122,10 +135,11 @@ if __name__ == "__main__":
                     continue
 
                 price_power = float(private_api.get_hashpower_fixedprice(market, "OCTOPUS", power)["fixedPrice"])
-                log.info(f"it should be: power={power}. price_power={price_power} amount{power * price_power * 3 / 24}")
-                power = 0.001 #пока ограничим мощьность
 
-                price_power = float(private_api.get_hashpower_fixedprice(market, "OCTOPUS", power)["fixedPrice"])
+                # log.info(f"it should be: power={power}. price_power={price_power} amount{power * price_power * 3 / 24}")
+                # power = 0.001 #пока ограничим мощьность
+                # price_power = float(private_api.get_hashpower_fixedprice(market, "OCTOPUS", power)["fixedPrice"])
+                
                 amount = power * price_power * 3 / 24 #Из рассчета что бы хватило на 3 часа
                 if amount<0.001:
                     amount = 0.001
