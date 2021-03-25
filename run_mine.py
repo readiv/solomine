@@ -9,26 +9,6 @@ from func import reward2float, get_api
 import logger
 log = logger.get_logger(__name__)
 
-# https://conflux.herominers.com/api/live_stats?address=cfx%3Aaaj1mzzem5cvefbxfb724x1rss70r9dd4ydwkt3zya
-# https://conflux.herominers.com/api/stats_address?address=cfx%3Aaaj1mzzem5cvefbxfb724x1rss70r9dd4ydwkt3zya&recentBlocksAmount=20&longpoll=true
-
-# Поля для сохранения
-# 1. Time Found - Время
-# 2. Height - Высота блока
-# 3. Difficulty - Сложность	
-# 3. Region - Регион
-# 6. Block Reward - Награда за блок
-# 7. Reward - Награда за минусом комиссии
-# 8. Hash Rate - текущий хэшь-рейт
-# https://conflux.herominers.com/api/stats_address?address=:wallet&recentBlocksAmount=20&longpoll=true
-
-#Нужна таблица
-# 1. time - Время
-# 1. difficulty - Текущая сложнось
-# 2. max_price - Максимальная цена профитности. 
-# 3. speed_XXX - Доступная скорость по каждомц рынку "EU", "USA", "EU_N", "USA_E"
-# 3. fix_0_001 - Цена фиксированого ордера при мощьности 0.001,0.008,0.009,0.01,0.05,0.1,0.5,1.0 
-
 
 def add_db(block_hash:str, height:int, wallet:str, difficulty:int, time_found:int, region:str, block_reward:float, reward:float, hash_rate:int):
     rec_exists = herro.query.filter(herro.block_hash == block_hash and herro.wallet == wallet).count()
@@ -77,9 +57,5 @@ if __name__ == "__main__":
     while True:
         for wallet in config.wallets:
             difficulty = run_wallet(wallet) 
-            if difficulty < config.limit_difficulty:
-                order.start()
-            else:
-                order.stop()
-            log.info(f"difficulty = {difficulty}")
+            # log.info(f"difficulty = {difficulty}")
 

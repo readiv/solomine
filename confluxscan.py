@@ -1,8 +1,16 @@
-import requests
+import datetime
+import requests, datetime
 
 import logger
 log = logger.get_logger(__name__)
 
+# def get_difficulty():
+#     m = (datetime.datetime.now().minute + 0) // 5 
+#     if m % 2 == 0:
+#         return 1989762383205
+#     else:
+#         return 2786714681928
+        
 def get_difficulty():
     """ Получает значения сложности и последнего и среднего хэшрейта для 
         n_for_avg блоков сети. Либо None, если что то пошло не так

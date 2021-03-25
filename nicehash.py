@@ -168,7 +168,12 @@ class private_api:
         return self.request('GET', '/main/api/v2/accounting/accounts2/', '', None)
 
     def get_accounts_for_currency(self, currency):
-        return self.request('GET', '/main/api/v2/accounting/account2/' + currency, '', None)
+        try:
+            x = self.request('GET', '/main/api/v2/accounting/account2/' + currency, '', None)
+        except:
+            x = { "available": 0.0 }
+        return x
+
 
     def get_withdrawal_addresses(self, currency, size, page):
 
