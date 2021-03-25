@@ -68,7 +68,7 @@ def run_wallet(wallet):
             rec_exists = add_db(block_hash, height, wallet, difficulty, time_found, region, block_reward, reward, hash_rate)
             if rec_exists == 0:
                 log.info(f"{wallet} {time_found} {height} {difficulty} {region} {block_reward} {reward}")
-    difficulty, _, _ = confluxscan.get_difficulty_hash(10)
+    difficulty = confluxscan.get_difficulty()
     # live_stats = get_api("https://conflux.herominers.com/api/live_stats?address=:wallet", wallet)
     return difficulty
             

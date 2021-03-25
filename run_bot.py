@@ -18,8 +18,8 @@
 
 from func import get_api
 
-import logger, nicehash, config, confluxscan, time, order
-log = logger.get_logger(__name__)
+import logger, config, confluxscan, time, order
+log = logger.get_logger(__name__,"bot.log")
 
 from order import private_api, public_api
 
@@ -48,7 +48,8 @@ if __name__ == "__main__":
             continue
 
         deff = confluxscan.get_difficulty()
-        # print(f"deff_prev = {deff_prev} deff = {deff}")
+        if deff == 0:
+            continue
         if deff > 1.1 * deff_prev: #Сложность повысилась. Стоп все ордера.
             log.info(f"deff > 1.1 * deff_prev deff_prev = {deff_prev} deff = {deff}")
             order.stop_all()
@@ -62,7 +63,7 @@ if __name__ == "__main__":
             for market in markets:
                 price_001[market] = float(private_api.get_hashpower_fixedprice(market, "OCTOPUS", 0.001)["fixedPrice"])
             log.info(f"deff < 0.9 * deff_prev deff_prev = {deff_prev} deff = {deff}")
-            print(price_001)
+            # print(price_001)
             deadline = time.monotonic() + 15 #75*60     #Ставим таймер на 75 минут
 
         if (deadline != 0) and (time.monotonic()>deadline): #сработал таймер
@@ -94,7 +95,8 @@ if __name__ == "__main__":
                 price_power = float(private_api.get_hashpower_fixedprice(market, "OCTOPUS", power)["fixedPrice"])
                 print(f"Выставляем ордер {market}: power = {power} price_power = {price_power}")
                 markets.remove(market) #Удаляем этот рынок, т.к. ордер для него выставили
-            deadline = 0
+            if len(markets) == 0: 
+                deadline = 0
 
         deff_prev = deff
         time.sleep(1)
