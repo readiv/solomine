@@ -1,3 +1,4 @@
+from time import sleep
 from requests.models import Response
 import logger, nicehash, config
 log = logger.get_logger(__name__,"z.log")
@@ -22,7 +23,17 @@ def start(market, type_order, algorithm, price, limit, amount):
         pool_id = get_pool_id(market, algorithm)
         log.info(f"market={market}, pool_id={pool_id}")
         response = private_api.create_hashpower_order(market, type_order, algorithm, price, limit, amount, pool_id, algo_response)
-        return response
+        if response.status_code != 200:
+            new_price = float(private_api.get_hashpower_fixedprice(market, "OCTOPUS", limit)["fixedPrice"])
+            if 100 * abs(new_price/new_price -1) <=5: #Цена изменилась не более чем на 5 процентов
+                response = private_api.create_hashpower_order(market, type_order, algorithm, new_price, limit, amount, pool_id, algo_response)
+        print(response)
+            
+        # active_orders = private_api.get_my_active_orders(algorithm,"ACTIVE","","100")["list"]
+        if response.status_code == 200:
+            return response
+        else:
+            return None
     except Exception as e:
         log.error(str(e))
         return None
