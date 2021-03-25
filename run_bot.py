@@ -49,8 +49,8 @@ if __name__ == "__main__":
             log.info(f"The difficulty has increased. Stop all orders. deff = {deff} deff_prev = {deff_prev}")
             order.stop_all("OCTOPUS")
             markets = ["EU","EU_N","USA","USA_E"]           #Восстанавливаем список рынков
-            deadline_order = time.monotonic() + 63*60     #Ставим таймер на 75 минут
-            deadline_price = time.monotonic() + 10*60     #Ставим таймер на 5 секунд 
+            deadline_order = time.monotonic() + 51*60     #Ставим таймер на 75 минут
+            deadline_price = time.monotonic() + 5*60     #Ставим таймер на 5 секунд 
             deff_prev = deff
 
         if deadline_price != 0 and (time.monotonic()>deadline_price) and len(markets) > 0: #Запоминаем цены.
