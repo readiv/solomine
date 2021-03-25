@@ -1,3 +1,4 @@
+from requests.models import Response
 import logger, nicehash, config
 log = logger.get_logger(__name__,"z.log")
 
@@ -20,8 +21,8 @@ def start(market, type_order, algorithm, price, limit, amount):
         algo_response = public_api.get_algorithms()
         pool_id = get_pool_id(market, algorithm)
         log.info(f"market={market}, pool_id={pool_id}")
-        return private_api.create_hashpower_order(market, type_order, algorithm, price, limit, amount, pool_id, algo_response)
-        # return True
+        response = private_api.create_hashpower_order(market, type_order, algorithm, price, limit, amount, pool_id, algo_response)
+        return response
     except Exception as e:
         log.error(str(e))
         return None
