@@ -44,7 +44,7 @@ def stop_all(algorithm:str = "", max_price = 0):
     try:
         active_orders = private_api.get_my_active_orders(algorithm,"ACTIVE","","100")["list"]
         for order in active_orders:
-            if float(order["price "]) > max_price:
+            if float(order["price"]) > max_price:
                 private_api.cancel_hashpower_order(order["id"])
                 log.info(f"order id = {order['id']} stoped")
         active_orders = private_api.get_my_active_orders(algorithm,"ACTIVE","","100")["list"]

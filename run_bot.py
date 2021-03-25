@@ -26,7 +26,7 @@ if __name__ == "__main__":
         if deff_prev != 0:
             break
     deadline_order = deadline_price = 0
-    deff_prev = 5951776704553
+    deff_prev = 1951776704553
 
     while True:
         n = 0
@@ -49,7 +49,7 @@ if __name__ == "__main__":
             log.info(f"The difficulty has increased. Stop all orders. deff = {deff} deff_prev = {deff_prev}")
             order.stop_all("OCTOPUS")
             markets = ["EU","EU_N","USA","USA_E"]           #Восстанавливаем список рынков
-            deadline_order = time.monotonic() + 75*60     #Ставим таймер на 75 минут
+            deadline_order = time.monotonic() + 63*60     #Ставим таймер на 75 минут
             deadline_price = time.monotonic() + 10*60     #Ставим таймер на 5 секунд 
             deff_prev = deff
 
