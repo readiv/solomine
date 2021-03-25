@@ -229,6 +229,7 @@ class private_api:
             "marketFactor": algo_setting['marketFactor'],
             "displayMarketFactor": algo_setting['displayMarketFactor']
         }
+
         return self.request('POST', '/main/api/v2/hashpower/order/', '', order_data)
 
     def  get_hashpower_fixedprice(self, market, algorithm, limit):

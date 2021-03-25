@@ -55,8 +55,8 @@ if __name__ == "__main__":
             markets = ["EU","EU_N","USA","USA_E"]
             deadline = 0
 
-        # if deff < 0.9 * deff_prev: #Сложность Понизилась
-        if (deadline == 0):
+        if deff < 0.9 * deff_prev: #Сложность Понизилась
+        # if (deadline == 0):
             markets = ["EU","EU_N","USA","USA_E"] #хз. На всякий случай
             price_001 = {} #Запоминаем значения цен на рынке при 0.001
             for market in markets:
