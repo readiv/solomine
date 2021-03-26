@@ -26,7 +26,7 @@ if __name__ == "__main__":
         if deff_prev != 0:
             break
     deadline_order = deadline_price = 0
-    deff_prev = 1951776704553
+    deff_prev = 5951776704553
 
     while True:
         n = 0
@@ -49,15 +49,15 @@ if __name__ == "__main__":
             log.info(f"The difficulty has increased. Stop all orders. deff = {deff} deff_prev = {deff_prev}")
             order.stop_all("OCTOPUS")
             markets = ["EU","EU_N","USA","USA_E"]           #Восстанавливаем список рынков
-            deadline_order = time.monotonic() + 51*60     #Ставим таймер на 75 минут
-            deadline_price = time.monotonic() + 5*60     #Ставим таймер на 5 секунд 
+            deadline_order = time.monotonic() + 60*75     #Ставим таймер на 75 минут
+            deadline_price = time.monotonic() + 60*5    #Ставим таймер на  минут
             deff_prev = deff
 
         if deadline_price != 0 and (time.monotonic()>deadline_price) and len(markets) > 0: #Запоминаем цены.
             price_001 = {} #Запоминаем значения цен на рынке при 0.001. Среднее арифметическое 4-х цен с интервалом 3 минуты 
             for market in markets:
                 price_001[market] = 0.0
-            n = 5
+            n = 1
             flag_err = False
             for i in range(n):
                 print(f"i = {i}")
@@ -66,7 +66,7 @@ if __name__ == "__main__":
                         price_temp = float(private_api.get_hashpower_fixedprice(market, "OCTOPUS", 0.001)["fixedPrice"])
                         if price_temp != 0:
                             break
-                        time.sleep(30)
+                        # time.sleep(30)
                     if price_temp == 0:
                         log.error(f"Initial price request error: fixedprice = 0")
                         flag_err = True
@@ -75,7 +75,7 @@ if __name__ == "__main__":
                     price_001[market] = price_001[market] + price_temp
                 if flag_err:
                     break
-                time.sleep(150)
+                # time.sleep(150)
             if flag_err:
                 continue
             for market in markets:
@@ -110,16 +110,16 @@ if __name__ == "__main__":
                 log.info(f"*** An attempt to place an order on the market {market}")
                 temp = private_api.get_hashpower_fixedprice(market, "OCTOPUS", 0.001) 
                 x1 = 0.001
-                x2 = 0.95 * float(temp["fixedMax"])
+                x2 = 0.95*float(temp["fixedMax"])
                 y1 = float(temp["fixedPrice"])
                 y2 = float(private_api.get_hashpower_fixedprice(market, "OCTOPUS", x2)["fixedPrice"])
                 if x2 == 0 or y1 == 0 or y2 == 0 or y1 > price[market]:
                     log.error(f"Error: x2:{x2} == 0 or y1:{y1} == 0 or y2:{y2} == 0 or y1:{y1} > price[market]:{price[market]}")
                     continue
                 if y2 < price[market]:
-                    power = x2
+                    power = 2 * x2 / 3
                 else:
-                    power = round(get_power(x1,y1,x2,y2,price[market],market,5),3)
+                    power = round(2*get_power(x1,y1,x2,y2,price[market],market,5)/3,3)
                 if power == 0:
                     log.error(f"power:{power} == 0")
                     continue
@@ -134,9 +134,12 @@ if __name__ == "__main__":
                 balance_available = float(private_api.get_accounts_for_currency("BTC")["available"])
                 if amount<0.001:
                     amount = 0.001
-                if balance_available < 0.001 or amount > balance_available: 
+                if balance_available < 0.001: 
                     log.error(f"Balance is close to zero. amount= {amount} balance_available = {balance_available}")
                     break
+                if amount > balance_available:
+                    power = 0.99 * power * balance_available / amount
+                    price_power = float(private_api.get_hashpower_fixedprice(market, "OCTOPUS", power)["fixedPrice"])
 
                 if order.start(market, "FIXED", "OCTOPUS", price_power, power, amount) is not None:
                     log.info(f"Order create: {market}: power = {power} price_power = {price_power} amount ={amount}")
