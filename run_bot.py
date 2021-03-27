@@ -53,12 +53,11 @@ if __name__ == "__main__":
             log.info(f"The difficulty has increased. Stop all orders. deff = {deff} deff_prev = {deff_prev}")
             order.stop_all(config.algorithm)
             markets = ["EU","EU_N","USA","USA_E"]           #Восстанавливаем список рынков
-            if config.test:
-                deadline_order = time.monotonic() + 60     #Ставим таймер на 30 секунд
-                deadline_price = time.monotonic() + 30    #Ставим таймер на 1 секунду
-            else:
-                deadline_order = time.monotonic() + 60*75     #Ставим таймер на 75 минут
-                deadline_price = time.monotonic() + 60*5    #Ставим таймер на  минут
+
+            deadline_order = time.monotonic() + config.start_deadline_order     #Ставим таймер на 30 секунд
+            config.start_deadline_order = config.time_deadline_order
+            deadline_price = time.monotonic() + config.time_deadline_price    #Ставим таймер на 1 секунду
+
             deff_prev = deff
 
         if deadline_price != 0 and (time.monotonic()>deadline_price) and len(markets) > 0: #Запоминаем цены.
