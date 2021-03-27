@@ -243,7 +243,7 @@ class private_api:
 
 
     def  get_hashpower_fixedprice(self, market, algorithm, limit):
-        if config.test:
+        if config.test_nicehash:
             return {"fixedMax": 0.1, "fixedPrice": 1.0}
 
         order_data = {

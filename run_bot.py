@@ -27,7 +27,7 @@ if __name__ == "__main__":
             break
     deadline_order = deadline_price = 0
     
-    if config.diff_up:
+    if not config.diff_up:
         deff_prev = 1051776704553
     else:
         deff_prev = 9951776704553
@@ -54,8 +54,8 @@ if __name__ == "__main__":
             order.stop_all(config.algorithm)
             markets = ["EU","EU_N","USA","USA_E"]           #Восстанавливаем список рынков
             if config.test:
-                deadline_order = time.monotonic() + 30     #Ставим таймер на 30 секунд
-                deadline_price = time.monotonic() + 1    #Ставим таймер на 1 секунду
+                deadline_order = time.monotonic() + 60     #Ставим таймер на 30 секунд
+                deadline_price = time.monotonic() + 30    #Ставим таймер на 1 секунду
             else:
                 deadline_order = time.monotonic() + 60*75     #Ставим таймер на 75 минут
                 deadline_price = time.monotonic() + 60*5    #Ставим таймер на  минут
@@ -110,6 +110,7 @@ if __name__ == "__main__":
                 if price_BTC != 0:
                     break
                 time.sleep(30)
+                log.error(f"price_BTC = 0")
             if (price_BTC is None) or (price_BTC == 0):
                 log.error(f"price_BTC = 0")
                 continue 

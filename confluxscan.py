@@ -8,9 +8,9 @@ def get_difficulty_test():
 
     m = (datetime.datetime.now().minute + 0) // 3 #Период минут
     if m % 2 == 0:
-        return 1989762383205
+        return 2487270397017
     else:
-        return 3886714681928
+        return 3205210279056
         
 def get_difficulty_production():
     """ Получает значения сложности и последнего и среднего хэшрейта для 
@@ -41,7 +41,7 @@ def get_difficulty_production():
         return 0
 
 def get_difficulty():
-    if config.test:
+    if not config.diff_real:
         return get_difficulty_test()
     else:
         return get_difficulty_production()
