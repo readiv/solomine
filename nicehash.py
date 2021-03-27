@@ -6,7 +6,7 @@ import requests
 import json
 from hashlib import sha256
 import optparse
-import sys
+import config
 
 
 class public_api:
@@ -234,10 +234,17 @@ class private_api:
             "marketFactor": algo_setting['marketFactor'],
             "displayMarketFactor": algo_setting['displayMarketFactor']
         }
+        
+        try:
+            x = self.request('POST', '/main/api/v2/hashpower/order/', '', order_data)
+        except:
+            x = None
+        return x
 
-        return self.request('POST', '/main/api/v2/hashpower/order/', '', order_data)
 
     def  get_hashpower_fixedprice(self, market, algorithm, limit):
+        if config.test:
+            return {"fixedMax": 0.1, "fixedPrice": 1.0}
 
         order_data = {
             "market": market, 

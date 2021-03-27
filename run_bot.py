@@ -9,7 +9,7 @@ markets = ["EU","EU_N","USA","USA_E"]
 
 def get_power(x1,y1,x2,y2,max_price,market,depth):
     x = (x1 + x2) / 2
-    y = float(private_api.get_hashpower_fixedprice(market, "OCTOPUS", x )["fixedPrice"])
+    y = float(private_api.get_hashpower_fixedprice(market, config.algorithm, x )["fixedPrice"])
     if y == 0:
         return 0
     if depth == 0:
@@ -26,47 +26,61 @@ if __name__ == "__main__":
         if deff_prev != 0:
             break
     deadline_order = deadline_price = 0
-    deff_prev = 5951776704553
+    
+    if config.diff_up:
+        deff_prev = 1051776704553
+    else:
+        deff_prev = 9951776704553
 
     while True:
         n = 0
-        balance_available = float(private_api.get_accounts_for_currency("BTC")["available"])
+        balance_available = float(private_api.get_accounts_for_currency(config.currency)["available"])
         while balance_available < 0.001:
             if n % 30 == 0:
                 log.info(f"Balance is close to zero. balance_available = {balance_available}")
             time.sleep(10)
-            balance_available = float(private_api.get_accounts_for_currency("BTC")["available"])
+            balance_available = float(private_api.get_accounts_for_currency(config.currency)["available"])
             n += 1
         if n != 0:
-            log.info(f"balance_available = {balance_available} BTC")
+            log.info(f"balance_available = {balance_available} {config.currency}")
 
         deff = confluxscan.get_difficulty()
         if deff == 0:
             log.error(f"difficulty = 0")
             continue
 
-        if deff > 1.20 * deff_prev: #Сложность повысилась очень значительно. Стоп все ордера.
+        if deff > 1.25 * deff_prev: #Сложность повысилась очень значительно. Стоп все ордера.
             log.info(f"The difficulty has increased. Stop all orders. deff = {deff} deff_prev = {deff_prev}")
-            order.stop_all("OCTOPUS")
+            order.stop_all(config.algorithm)
             markets = ["EU","EU_N","USA","USA_E"]           #Восстанавливаем список рынков
-            deadline_order = time.monotonic() + 60*75     #Ставим таймер на 75 минут
-            deadline_price = time.monotonic() + 60*5    #Ставим таймер на  минут
+            if config.test:
+                deadline_order = time.monotonic() + 30     #Ставим таймер на 30 секунд
+                deadline_price = time.monotonic() + 1    #Ставим таймер на 1 секунду
+            else:
+                deadline_order = time.monotonic() + 60*75     #Ставим таймер на 75 минут
+                deadline_price = time.monotonic() + 60*5    #Ставим таймер на  минут
             deff_prev = deff
 
         if deadline_price != 0 and (time.monotonic()>deadline_price) and len(markets) > 0: #Запоминаем цены.
             price_001 = {} #Запоминаем значения цен на рынке при 0.001. Среднее арифметическое 4-х цен с интервалом 3 минуты 
             for market in markets:
                 price_001[market] = 0.0
-            n = 1
+
+            if config.test:
+                n = 1
+            else:
+                n = 10
+
             flag_err = False
             for i in range(n):
                 print(f"i = {i}")
                 for market in markets:
                     for _ in range(5): #5 попыток запроса
-                        price_temp = float(private_api.get_hashpower_fixedprice(market, "OCTOPUS", 0.001)["fixedPrice"])
+                        price_temp = float(private_api.get_hashpower_fixedprice(market, config.algorithm, 0.001)["fixedPrice"])
                         if price_temp != 0:
                             break
-                        # time.sleep(30)
+                        if not config.test:
+                            time.sleep(30)
                     if price_temp == 0:
                         log.error(f"Initial price request error: fixedprice = 0")
                         flag_err = True
@@ -75,7 +89,8 @@ if __name__ == "__main__":
                     price_001[market] = price_001[market] + price_temp
                 if flag_err:
                     break
-                # time.sleep(150)
+                if not config.test:
+                    time.sleep(150)
             if flag_err:
                 continue
             for market in markets:
@@ -108,11 +123,11 @@ if __name__ == "__main__":
             markets_w = markets.copy()
             for market in markets_w:
                 log.info(f"*** An attempt to place an order on the market {market}")
-                temp = private_api.get_hashpower_fixedprice(market, "OCTOPUS", 0.001) 
+                temp = private_api.get_hashpower_fixedprice(market, config.algorithm, 0.001) 
                 x1 = 0.001
                 x2 = 0.95*float(temp["fixedMax"])
                 y1 = float(temp["fixedPrice"])
-                y2 = float(private_api.get_hashpower_fixedprice(market, "OCTOPUS", x2)["fixedPrice"])
+                y2 = float(private_api.get_hashpower_fixedprice(market, config.algorithm, x2)["fixedPrice"])
                 if x2 == 0 or y1 == 0 or y2 == 0 or y1 > price[market]:
                     log.error(f"Error: x2:{x2} == 0 or y1:{y1} == 0 or y2:{y2} == 0 or y1:{y1} > price[market]:{price[market]}")
                     continue
@@ -124,14 +139,14 @@ if __name__ == "__main__":
                     log.error(f"power:{power} == 0")
                     continue
 
-                price_power = float(private_api.get_hashpower_fixedprice(market, "OCTOPUS", power)["fixedPrice"])
+                price_power = float(private_api.get_hashpower_fixedprice(market, config.algorithm, power)["fixedPrice"])
 
                 # log.info(f"it should be: power={power}. price_power={price_power} amount{power * price_power * 3 / 24}")
                 # power = 0.001 #пока ограничим мощьность
-                # price_power = float(private_api.get_hashpower_fixedprice(market, "OCTOPUS", power)["fixedPrice"])
+                # price_power = float(private_api.get_hashpower_fixedprice(market, config.algorithm, power)["fixedPrice"])
                 
                 amount = power * price_power * 3 / 24 #Из рассчета что бы хватило на 3 часа
-                balance_available = float(private_api.get_accounts_for_currency("BTC")["available"])
+                balance_available = float(private_api.get_accounts_for_currency(config.currency)["available"])
                 if amount<0.001:
                     amount = 0.001
                 if balance_available < 0.001: 
@@ -139,9 +154,9 @@ if __name__ == "__main__":
                     break
                 if amount > balance_available:
                     power = 0.99 * power * balance_available / amount
-                    price_power = float(private_api.get_hashpower_fixedprice(market, "OCTOPUS", power)["fixedPrice"])
-
-                if order.start(market, "FIXED", "OCTOPUS", price_power, power, amount) is not None:
+                    price_power = float(private_api.get_hashpower_fixedprice(market, config.algorithm, power)["fixedPrice"])
+               
+                if order.start(market, config.type_order, config.algorithm, price_power, power, amount) is not None:
                     log.info(f"Order create: {market}: power = {power} price_power = {price_power} amount ={amount}")
                     markets.remove(market) #Удаляем этот рынок, т.к. ордер для него выставили
                 

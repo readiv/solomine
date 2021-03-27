@@ -1,4 +1,4 @@
-from time import sleep
+import config
 from requests.models import Response
 import logger, nicehash, config
 log = logger.get_logger(__name__,"z.log")
@@ -19,21 +19,18 @@ def get_pool_id(market, algorithm):
 
 def start(market, type_order, algorithm, price, limit, amount):
     try:
-        # algo_response = public_api.get_algorithms()
-        # pool_id = get_pool_id(market, algorithm)
-        # log.info(f"market={market}, pool_id={pool_id}")
-        # response = private_api.create_hashpower_order(market, type_order, algorithm, price, limit, amount, pool_id, algo_response)
-        # if response.status_code != 200:
-        #     new_price = float(private_api.get_hashpower_fixedprice(market, "OCTOPUS", limit)["fixedPrice"])
-        #     if 100 * abs(new_price/new_price -1) <=5: #Цена изменилась не более чем на 5 процентов
-        #         response = private_api.create_hashpower_order(market, type_order, algorithm, new_price, limit, amount, pool_id, algo_response)
-        # print(response)
-            
-        # # active_orders = private_api.get_my_active_orders(algorithm,"ACTIVE","","100")["list"]
-        # if response.status_code == 200:
-        #     return response
-        # else:
-        return None
+        algo_response = public_api.get_algorithms()
+        pool_id = get_pool_id(market, algorithm)
+        log.info(f"market={market}, pool_id={pool_id}")
+        if config.no_order:
+            return True
+        response = private_api.create_hashpower_order(market, type_order, algorithm, price, limit, amount, pool_id, algo_response)
+        if response is None:
+            new_price = float(private_api.get_hashpower_fixedprice(market, algorithm, limit)["fixedPrice"])
+            if 100 * abs(new_price/new_price -1) <=5: #Цена изменилась не более чем на 5 процентов
+                response = private_api.create_hashpower_order(market, type_order, algorithm, new_price, limit, amount, pool_id, algo_response)
+
+        return response
     except Exception as e:
         log.error(str(e))
         return None
@@ -45,20 +42,21 @@ def stop_all(algorithm:str = "", max_price = 0):
         active_orders = private_api.get_my_active_orders(algorithm,"ACTIVE","","100")["list"]
         for order in active_orders:
             if float(order["price"]) > max_price:
-                private_api.cancel_hashpower_order(order["id"])
+                if not config.no_order:
+                    private_api.cancel_hashpower_order(order["id"])
                 log.info(f"order id = {order['id']} stoped")
         active_orders = private_api.get_my_active_orders(algorithm,"ACTIVE","","100")["list"]
         if len(active_orders) > 0:
             return True
         else:
-        return None
-        return True
+            return None
+        # return True
     except Exception as e:
         log.error(str(e))
         return None
 
 if __name__ == "__main__":
     # pass
-    # print(start("EU","STANDARD", "SCRYPT", 1, 0.01, 0.001, "cfcfee1e-dd9a-4d4f-9859-5be0a9ccfa6c"))
-    stop_all("OCTOPUS")
-    # get_pool_id("EU_N","OCTOPUS")
+    print(start("EU","STANDARD", config.algorithm, 1, 0.001, 0.001))
+    # stop_all()
+    # get_pool_id("EU_N",config.algorithm)
