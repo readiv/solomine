@@ -41,6 +41,8 @@ if __name__ == "__main__":
             time.sleep(10)
             balance_available = float(private_api.get_accounts_for_currency(config.currency)["available"])
             n += 1
+            if n > 100:
+                break
         if n != 0:
             log.info(f"balance_available = {balance_available} {config.currency}")
 
@@ -50,7 +52,7 @@ if __name__ == "__main__":
             continue
 
         if deff > 1.2 * deff_prev: #Сложность повысилась очень значительно. Стоп все ордера.
-            log.info(f"The difficulty has increased. Stop all orders. deff = {deff} deff_prev = {deff_prev}")
+            log.info(f"The difficulty has increased. Stop all orders. deff_prev = {deff_prev} deff = {deff}")
             order.stop_all(config.algorithm)
             markets = ["EU","EU_N","USA","USA_E"]           #Восстанавливаем список рынков
 

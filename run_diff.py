@@ -13,7 +13,7 @@ private_api = nicehash.private_api(config.host, config.organisation_id, config.k
 
 def parser():
     try:
-        difficulty = confluxscan.get_difficulty()
+        difficulty = confluxscan.get_difficulty_production()
         price_BTC = float(get_api("https://conflux.herominers.com/api/get_market?tickers%5B%5D=CFX-BTC")[0]["price"]) 
         max_price = 1000000000000 * 172800 * price_BTC / difficulty
         print(difficulty, max_price)
