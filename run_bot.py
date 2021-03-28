@@ -49,7 +49,7 @@ if __name__ == "__main__":
             log.error(f"difficulty = 0")
             continue
 
-        if deff > 1.25 * deff_prev: #Сложность повысилась очень значительно. Стоп все ордера.
+        if deff > 1.2 * deff_prev: #Сложность повысилась очень значительно. Стоп все ордера.
             log.info(f"The difficulty has increased. Stop all orders. deff = {deff} deff_prev = {deff_prev}")
             order.stop_all(config.algorithm)
             markets = ["EU","EU_N","USA","USA_E"]           #Восстанавливаем список рынков
